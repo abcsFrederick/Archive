@@ -1,0 +1,34 @@
+ol.breadcrumb(style='padding: 10px;margin-bottom:0px;background-color:#eaebea')
+  - var idx = 0
+  each obj in links
+    li
+      a.g-breadcrumb-link(style='padding: 0px; display:inline-block',g-index=idx)
+        if obj.type === 'SAIP'
+          i.icon-sitemap
+        = obj.object.name
+    - idx += 1
+
+  if current
+    li.active
+      if current.type === 'SAIP'
+        i.icon-sitemap
+      = current.object.name
+
+  if descriptionText
+    a.g-description-preview= descriptionText
+
+  // .pull-right
+  //   .g-child-count-container.hide
+  //     .g-subfolder-count-container(title='total folders')
+  //       i.icon-folder
+  //       .g-subfolder-count
+
+  //     if idx > 0
+  //       .g-item-count-container(title='total items')
+  //         i.icon-doc-text-inv
+  //         .g-item-count
+
+  //   if idx > 0
+  //     .g-level-up-button-container
+  //       a.g-hierarchy-level-up(style='padding: 0px; display:inline-block',title="Go up one level")
+  //         i.icon-level-up

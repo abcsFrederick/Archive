@@ -1,0 +1,11 @@
+ul.g-folder-list(style='padding: 0px;list-style-type: none;')
+	each folder in folders
+		li.SAIP-folder-list-entry(style='font-size: 15px;border-top: 1px solid #efefef;box-sizing: border-box;padding: 4px 5px 3px;')
+			//- if parentCheckboxFlag
+			//- 	input.SAIP-list-checkbox-patients(style='margin-right: 7px;',type="checkbox", s-patient-id=folder.id,s-type='patient' checked)
+			//- else
+			//- 	input.SAIP-list-checkbox-patients(style='margin-right: 7px;',type="checkbox", s-patient-id=folder.id,s-type='patient')
+			a.SAIP-folder-list-link-patients(name=folder.pat_name,pat-id=folder.id, pat_path=folder.pat_path)
+				i.icon-folder
+				= folder.pat_name
+				i.icon-right-dir
