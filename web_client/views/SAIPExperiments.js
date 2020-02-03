@@ -20,14 +20,14 @@ var SAIPExperiments = View.extend({
 	initialize(setting){
 		this.hierarchyBreadcrumbView = setting.hierarchyBreadcrumbView;
 		console.log(this.hierarchyBreadcrumbView)
-		this.parentCheckboxFlag=setting.parentCheckbox;
+		// this.parentCheckboxFlag=setting.parentCheckbox;
 		this.currentUser=setting.currentUser;
 		this.experimentsFolder = setting.experimentsFolder;
 		this.SAIPHierarchyBreadcrumbObjects=setting.SAIPHierarchyBreadcrumbObjects;
 		//console.log(this.parentCheckboxFlag)
 		this.$el.html(experimentsTemplate({
 			folders:this.experimentsFolder,
-			parentCheckboxFlag:this.parentCheckboxFlag
+			// parentCheckboxFlag:this.parentCheckboxFlag
 			})
 		);
 	},

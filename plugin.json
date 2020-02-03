@@ -1,5 +1,5 @@
 {
-    "name": "SAIP",
+    "name": "Archive",
     "description": "Connect to scippy database",
     "url": "http://girder.readthedocs.io/en/latest/plugins.html#SAIP",
     "version": "0.1.0",

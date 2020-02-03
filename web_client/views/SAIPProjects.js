@@ -7,14 +7,14 @@ import SAIPHierarchyBreadcrumbView from './SAIPHierarchyBreadcrumbView';
 var SAIPProjects = View.extend({
 	events:{
 		'click a.SAIP-folder-list-link-projects':function (event) {
-            event.preventDefault();
-            this.breadcrumbObj = {'object':{'name':event.currentTarget.getAttribute('name')},'type':'project'};
-            let parentCheckbox =event.currentTarget.parentElement.children[0].checked
-            this.showExperiments(event.currentTarget.getAttribute('pro-id'),parentCheckbox)
-        },
-        'click .SAIP-list-checkbox-projects':function(e){
-        	events.trigger('ssr:chooseFolderItem',e)
-        }
+      event.preventDefault();
+      this.breadcrumbObj = {'object':{'name':event.currentTarget.getAttribute('name')},'type':'project'};
+      let parentCheckbox = event.currentTarget.parentElement.children[0].checked;
+      this.showExperiments(event.currentTarget.getAttribute('pro-id'),parentCheckbox);
+    },
+    'click .SAIP-list-checkbox-projects':function(e){
+    	events.trigger('ssr:chooseFolderItem',e)
+    }
 	},
 	initialize(setting){
 
@@ -66,7 +66,7 @@ var SAIPProjects = View.extend({
 			// console.log(this.SAIPHierarchyBreadcrumbObjects);
 			this.saipExperimentsView = new SAIPExperimentsView({
 				parentView:this,
-				parentCheckbox:parentCheckbox,
+				// parentCheckbox:parentCheckbox,
 				currentUser:this.currentUser,
 				experimentsFolder:col,
 				SAIPHierarchyBreadcrumbObjects:this.SAIPHierarchyBreadcrumbObjects,

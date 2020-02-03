@@ -5,7 +5,6 @@ from girder.api.describe import Description, autoDescribeRoute
 from girder.api import access
 # import json
 # import datetime
-import mysql.connector as mariadb
 from os import listdir
 import os
 from girder.models.collection import Collection as girderCollection
@@ -15,14 +14,16 @@ from girder.models.folder import Folder as FolderModel
 from girder.constants import AccessType
 from girder.models.assetstore import Assetstore
 from girder.utility import assetstore_utilities, config
+from .models.SSRArchive import SSRArchive
+from .models.SAIPArchive import SAIPArchive
 import SAIPConfig
 # import copy
 # from girder import events
 
 
-class SAIP(Resource):
+class Archive(Resource):
     def __init__(self):
-        super(SAIP, self).__init__()
+        super(Archive, self).__init__()
         configSection = config.getConfig().get('server').get('mode')
         if configSection == 'development':
             self.configuration = SAIPConfig.development
@@ -32,7 +33,8 @@ class SAIP(Resource):
 
         self.mnt = '/mnt/scippy_images/'
         # more secure with login current user info
-        self.route('GET', (':id', 'projects'), self.getProjects)
+        self.route('GET', ('projects', 'ssr',), self.getSSRProjects)
+        self.route('GET', ('projects', 'saip',), self.getSAIPProjects)
         self.route('GET', (':id', 'experiments'), self.getExperiments)
         self.route('GET', (':id', 'patients'), self.getPatients)
         self.route('GET', (':id', 'rootpath', 'patient'), self.getPatientSeriesRoot)
@@ -150,55 +152,25 @@ class SAIP(Resource):
         # #             (filePath, os.path.join(self.collectionPath, relpath)))
         return study_folder
 
-
     @access.user
     @autoDescribeRoute(
         Description('Retrieve all projects under login user.')
-        .param('id', 'user id.', paramType='path')
+        .param('text', 'Pass to perform a text search.', required=False)
+        .pagingParams(defaultSort='lowerName')
         .errorResponse())
-    def getProjects(self, id):
-        try:
-            mariadb_connection = mariadb.connect(
-                host=self.configuration.MYSQL_CONFIG['host'], 
-                port=self.configuration.MYSQL_CONFIG['port'], 
-                user=self.configuration.MYSQL_CONFIG['user'],
-                password=self.configuration.MYSQL_CONFIG['password'], 
-                database=self.configuration.MYSQL_CONFIG['dbname'])
-            print "I am able to connect to database"
-        except mariadb.Error as error:
-            print("Error: {}".format(error))
+    def getSSRProjects(self, text, limit, offset, sort):
+        ssrArchive = SSRArchive()
+        return ssrArchive.find(text, offset=offset, limit=limit, sort=sort)
 
-        cursor = mariadb_connection.cursor(buffered=True, dictionary=True)
-        cursor.execute("SELECT * FROM site_users WHERE userId=%s", (id,))
-        for row in cursor:
-            userid = row['id']
-        print '----------'
-        cursor.execute("SELECT group_id FROM site_group_memberships WHERE person_id=%s",
-                       (str(userid),))
-
-        for row in cursor:
-            if row['group_id'] == 7:
-                admin = True
-                print 'admin'
-                break
-
-        projects = []
-        if admin:
-            cursor.execute("SELECT * FROM nci_projects")
-            for row in cursor:
-                projects.append(row)
-        else:
-            cursor.execute(
-                "SELECT * FROM "
-                "(SELECT project_id FROM nci_project_users WHERE user_id=%s)"
-                " as t1 LEFT JOIN nci_projects ON project_id=nci_projects.id",
-                (str(userid),))
-            for row in cursor:
-                projects.append(row)
-        cursor.close()
-        mariadb_connection.close()
-        # print projects[0]
-        return projects
+    @access.user
+    @autoDescribeRoute(
+        Description('Retrieve all SAIP projects under login user.')
+        .param('text', 'Pass to perform a text search.', required=False)
+        .errorResponse())
+    def getSAIPProjects(self, text):
+        
+        saipArchive = SAIPArchive()
+        return saipArchive.find(text)
 
     @access.user
     @autoDescribeRoute(
@@ -843,4 +815,4 @@ class SAIP(Resource):
 
 def load(info):
     # info['apiRoot'].scippy = Prefix()
-    info['apiRoot'].SAIP = SAIP()
+    info['apiRoot'].Archive = Archive()

@@ -1,5 +1,5 @@
 class Config:
-    PLUGIN_NAME = 'SAIP'
+    PLUGIN_NAME = 'Archive'
 
 class development(Config):
     DEBUG = True
