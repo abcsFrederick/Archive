@@ -1,11 +1,14 @@
 from girder.models.collection import Collection
 from girder.models.folder import Folder as FolderModel
-from ..SAIPConfig import development, production
+
 from girder.api.rest import Resource
 from girder.constants import AccessType
-import mysql.connector as mariadb
+
 from girder.utility import config
 
+from ..external.mariadb_proxy import MariadbProxy
+from ..external.postgre_proxy import PostgredbProxy
+import psycopg2.extras
 
 class SAIPArchive(Resource):
     """docstring for SSR"""
@@ -13,47 +16,33 @@ class SAIPArchive(Resource):
         self.name = 'SAIPArchive'
         super(SAIPArchive, self).__init__()
         self.user = self.getCurrentUser()
-        configSection = config.getConfig().get('server').get('mode')
-        if configSection == 'development':
-            self.configuration = development
-        else:
-            self.configuration = production
+        self.MariaDB = MariadbProxy().conn
+        self.PostgreDB = PostgredbProxy().conn
+        self.MariaCursor = self.MariaDB.cursor(buffered=True, dictionary=True)
+        self.PostgreCursor = self.PostgreDB.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    def databaseConnector(self):
-        try:
-            self.mariadb_connection = mariadb.connect(
-                host=self.configuration.MYSQL_CONFIG['host'], 
-                port=self.configuration.MYSQL_CONFIG['port'], 
-                user=self.configuration.MYSQL_CONFIG['user'],
-                password=self.configuration.MYSQL_CONFIG['password'], 
-                database=self.configuration.MYSQL_CONFIG['dbname'])
-        except mariadb.Error as error:
-            print("Error: {}".format(error))
+    def getProjects(self, text):
+        self.MariaCursor.execute("SELECT * FROM site_users WHERE userId=%s", (self.user['login'],))
 
-    def find(self, text):
-        self.databaseConnector()
-        cursor = self.mariadb_connection.cursor(buffered=True, dictionary=True)
-        cursor.execute("SELECT * FROM site_users WHERE userId=%s", (self.user['login'],))
-
-        rows = [row for row in cursor]
+        rows = [row for row in self.MariaCursor]
         if len(rows):
             for row in rows:
                 userid = row['id']
         else:
-            cursor.close()
+            self.MariaCursor.close()
             return 'not registored user of SAIP'
         
-        cursor.execute("SELECT group_id FROM site_group_memberships WHERE person_id=%s",
+        self.MariaCursor.execute("SELECT group_id FROM site_group_memberships WHERE person_id=%s",
                        (str(userid),))
 
-        for row in cursor:
+        for row in self.MariaCursor:
             if row['group_id'] == 7:
                 admin = True
                 break
 
         projects = []
         if admin:
-            cursor.execute("SELECT nci_projects_created_at,nci_projects_id, nci_projects_name, nci_projects_pi_id,"
+            self.MariaCursor.execute("SELECT nci_projects_created_at,nci_projects_id, nci_projects_name, nci_projects_pi_id,"
                 "Pi_First_name, Pi_Last_name, number_of_experiments, number_of_studies, projects_status, number_of_images,"
                 "GROUP_CONCAT(short_name) AS short_name FROM "
                 "(SELECT t5.*, nci_protocol_categories.short_name FROM "
@@ -69,16 +58,58 @@ class SAIPArchive(Resource):
                 "imaging_experiments ON t3.nci_projects_id =imaging_experiments.project_id GROUP BY "
                 "t3.nci_projects_id) as t4 LEFT JOIN nci_protocols ON t4.nci_projects_id=nci_protocols.project_id) as t5 LEFT JOIN "
                 "nci_protocol_categories ON t5.protocol_category_id=nci_protocol_categories.id) AS t6 GROUP BY nci_projects_id;")
-            for row in cursor:
+            for row in self.MariaCursor:
                 projects.append(row)
         else:
-            cursor.execute(
+            self.MariaCursor.execute(
                 "SELECT * FROM "
                 "(SELECT project_id FROM nci_project_users WHERE user_id=%s)"
                 " as t1 LEFT JOIN nci_projects ON project_id=nci_projects.id",
                 (str(userid),))
-            for row in cursor:
+            for row in self.MariaCursor:
                 projects.append(row)
-        cursor.close()
-        self.mariadb_connection.close()
+        self.MariaCursor.close()
+        self.MariaDB.close()
         return projects
+
+    def getExperiments(self, projectId):
+        self.MariaCursor.execute("SELECT * FROM imaging_experiments WHERE project_id=%s", (projectId,))
+        experiments = self.MariaCursor.fetchall()
+        self.MariaCursor.close()
+        self.MariaDB.close()
+        return experiments
+
+    def getPatients(self, experimentId):
+        self.MariaCursor.execute("SELECT * FROM imaging_participants WHERE experiment_id=%s", (experimentId,))
+
+        patients = []
+
+        for row in self.MariaCursor:
+            patients.append(row['patient_id'])
+        self.MariaCursor.close()
+        self.MariaDB.close()
+
+        try:
+            self.PostgreCursor.execute("""SELECT id, pat_name,
+             pat_mrn, pat_path FROM patients WHERE id IN %s""",
+                        (tuple(patients),))
+        except Exception:
+            print "I can't SELECT from studies"
+
+        rows = self.PostgreCursor.fetchall()
+        self.PostgreCursor.close()
+        self.PostgreDB.close()
+        return rows
+
+    def getStudies(self, patientId):
+        try:
+            self.PostgreCursor.execute("""SELECT id,studyid,study_path,
+            study_description FROM studies WHERE pat_id=%s""" % patientId)
+        except Exception:
+            print "I can't SELECT from studies"
+
+        rows = self.PostgreCursor.fetchall()
+
+        self.PostgreCursor.close()
+        self.PostgreDB.close()
+        return rows
