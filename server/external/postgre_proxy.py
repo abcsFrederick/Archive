@@ -1,4 +1,5 @@
 from girder.models.setting import Setting
+from girder.exceptions import AccessException
 import psycopg2
 import psycopg2.extras
 
@@ -22,7 +23,9 @@ class PostgredbProxy(object):
                 user=self.configuration['user'],
                 host=self.configuration['host'],
                 password=self.configuration['password'])
-            print "I am able to connect to the database"
             return postgre_connection
         except Exception:
-            print "I am unable to connect to the database"
+            raise AccessException('Cannot connection to postgre DB on host:%s, databse:%s, user:%s' %
+                                  (self.configuration['host'],
+                                   self.configuration['dbname'],
+                                   self.configuration['user']))

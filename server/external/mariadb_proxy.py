@@ -22,7 +22,9 @@ class MariadbProxy(object):
                 user=self.configuration['user'],
                 password=self.configuration['password'], 
                 database=self.configuration['dbname'])
-            print "I am able to connect to fr-s-mysql-4 database"
             return mariadb_connection
         except mariadb.Error as error:
-            print("Error: {}".format(error))
+            raise AccessException('Cannot connection to mariaDB on host:%s, databse:%s, user:%s' %
+                                  (self.configuration['host'],
+                                   self.configuration['dbname'],
+                                   self.configuration['user']))

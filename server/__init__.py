@@ -6,6 +6,7 @@ from . import rest
 # from girder import events
 
 SettingDefault.defaults.update({
+    PluginSettings.SACIPPY_MOUNT: '/mnt/scippy_images',
     PluginSettings.SAIP_CONFIG: {
         'host': 'ivg-webdev',
         'dbname': 'SAIP',

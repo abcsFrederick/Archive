@@ -7,6 +7,7 @@ class PluginSettings(object):
 
     SACIPPY_CONFIG = 'Archive.SCIPPY'
 
+    SACIPPY_MOUNT = 'Archive.SCIPPYMOUNT'
 # class production(Config):
 #     DEBUG = False
 

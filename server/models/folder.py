@@ -1,26 +1,34 @@
-from girder.models.collection import Collection
-from girder.models.folder import Folder as FolderModel
-
+import os
+from girder.models.setting import Setting
 from girder.api.rest import Resource
-from girder.constants import AccessType
-
-from girder.utility import config
+from girder.exceptions import GirderException
 
 from ..external.mariadb_proxy import MariadbProxy
 from ..external.postgre_proxy import PostgredbProxy
 import psycopg2.extras
 
-class SAIPArchive(Resource):
-    """docstring for SSR"""
+class Folder(Resource):
     def __init__(self):
-        self.name = 'SAIPArchive'
-        super(SAIPArchive, self).__init__()
+        self.name = 'SAIPArchiveFolderModel'
+        super(Folder, self).__init__()
         self.user = self.getCurrentUser()
         self.MariaDB = MariadbProxy().conn
         self.PostgreDB = PostgredbProxy().conn
         self.MariaCursor = self.MariaDB.cursor(buffered=True, dictionary=True)
         self.PostgreCursor = self.PostgreDB.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        self.root = Setting().get('Archive.SCIPPYMOUNT')
 
+    def find(self, parentId, parentType, text=None):
+        if parentType == 'user':
+            result = self.getProjects(text)
+        elif parentType == 'project':
+            result = self.getExperiments(parentId)
+        elif parentType == 'experiment':
+            result = self.getPatients(parentId)
+        elif parentType == 'patient':
+            result = self.getStudies(parentId)
+
+        return result
     def getProjects(self, text):
         self.MariaCursor.execute("SELECT * FROM site_users WHERE userId=%s", (self.user['login'],))
 
@@ -94,7 +102,7 @@ class SAIPArchive(Resource):
              pat_mrn, pat_path FROM patients WHERE id IN %s""",
                         (tuple(patients),))
         except Exception:
-            print "I can't SELECT from studies"
+            raise GirderException('Query failed when SELECT from studies')
 
         rows = self.PostgreCursor.fetchall()
         self.PostgreCursor.close()
@@ -106,10 +114,63 @@ class SAIPArchive(Resource):
             self.PostgreCursor.execute("""SELECT id,studyid,study_path,
             study_description FROM studies WHERE pat_id=%s""" % patientId)
         except Exception:
-            print "I can't SELECT from studies"
+            raise GirderException('Query failed when SELECT from studies')
 
         rows = self.PostgreCursor.fetchall()
 
         self.PostgreCursor.close()
         self.PostgreDB.close()
         return rows
+
+    def fullPath(self, id, parentType):
+        if parentType == 'project':
+            result = self.getExperiments(parentId)
+        elif parentType == 'experiment':
+            result = self.getPatients(parentId)
+        elif parentType == 'patient':
+            try:
+                self.PostgreCursor.execute(
+                    """SELECT id,pat_path,pat_name FROM 
+                    patients WHERE id = %s""",
+                    (id,))
+            except Exception:
+                raise GirderException('Query failed when SELECT from patients')
+            
+            rows = self.PostgreCursor.fetchall()
+            if len(rows):
+                row = rows[0]
+                self.PostgreCursor.close()
+                self.PostgreDB.close()
+                if row['pat_path'] is not None:
+                    path = os.path.join(self.root,
+                                        row['pat_path'])
+                    return row['pat_name'], path
+                else:
+                    raise GirderException('Rows with id:%s does not have [ pat_path ]' % row['id'])
+            else:
+                raise GirderException('No patient: %s ' % id)
+        elif parentType == 'study':
+            try:
+                self.PostgreCursor.execute(
+                    """SELECT t1.*,pat_path,pat_name FROM 
+                    (SELECT id,study_path,pat_id,study_description FROM 
+                    studies WHERE id = %s) AS t1 LEFT JOIN patients ON patients.id=t1.pat_id;""",
+                    (id,))
+            except Exception:
+                raise GirderException('Query failed when SELECT from studies')
+
+            rows = self.PostgreCursor.fetchall()
+            if len(rows):
+                row = rows[0]
+                self.PostgreCursor.close()
+                self.PostgreDB.close()
+                if row['pat_path'] is not None\
+                    and row['study_path'] is not None:
+                    path = os.path.join(self.root,
+                                        row['pat_path'], 
+                                        row['study_path'])
+                    return row['study_description'], path
+                else:
+                    raise GirderException('Rows with id:%s does not have [ pat_path, study_path]' % row['id'])
+            else:
+                raise GirderException('No study: %s' % id)
