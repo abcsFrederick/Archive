@@ -1,7 +1,7 @@
 - var idx = 0
 each obj in links
   li
-    a.g-breadcrumb-link(style='padding: 0px; display:inline-block',g-index=idx)
+    a.g-breadcrumb-link(style='padding: 0px; display:inline-block', g-index=idx)
       if obj.type === 'projects'
         i.icon-sitemap
         = obj.object.name
@@ -20,14 +20,15 @@ if current
     if current.type === 'projects'
       i.icon-sitemap
       = current.object.name
+      input.search(type='text', placeholder='Search by name')
     else if current.type === 'experiments'
       = current.get('nci_projects_name')
     else if current.type === 'patients'
       = current.get('title')
     else if current.type === 'studies'
-        = current.get('pat_name')
+      = current.get('pat_name')
     else if current.type === 'series'
-        = current.get('study_description') 
+      = current.get('study_description') 
 if descriptionText
   a.g-description-preview= descriptionText
 
@@ -37,10 +38,10 @@ if descriptionText
       i.icon-folder
       .g-subfolder-count
 
-//     if idx > 0
-//       .g-item-count-container(title='total items')
-//         i.icon-doc-text-inv
-//         .g-item-count
+    if idx > 0
+      .g-item-count-container(title='total items')
+        i.icon-doc-text-inv
+        .g-item-count
 
 //   if idx > 0
 //     .g-level-up-button-container

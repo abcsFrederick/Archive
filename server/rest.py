@@ -1,26 +1,17 @@
 from girder.models.setting import Setting
 
-import psycopg2
-import psycopg2.extras
 from girder.api.rest import Resource
 from girder.api.describe import Description, autoDescribeRoute
 from girder.api import access
-# import json
-# import datetime
-from os import listdir
-import os
-from girder.models.collection import Collection as girderCollection
-from girder.models.folder import Folder as FolderModel
-# from girder.models.item import Item as ItemModel
-# from girder.models.file import File as FileModel
-from girder.constants import AccessType, SettingDefault, TokenScope
-from girder.models.assetstore import Assetstore
-from girder.utility import assetstore_utilities, config
+
+from girder.constants import TokenScope
+
+
 from .models.folder import Folder
 from .models.item import Item
 from .models.file import File
-from .models.SAIPArchive import SAIPArchive
 from .SAIPConfig import PluginSettings
+
 
 class Archive(Resource):
     def __init__(self):
@@ -28,7 +19,7 @@ class Archive(Resource):
         # configSection = config.getConfig().get('server').get('mode')
         # if configSection == 'development':
         #     self.configuration = Setting().get('Archive.SAIP')
-        #     print 
+        #     print
         # else:
         #     self.configuration = Setting().get('Archive.SCIPPY')
         self.resourceName = PluginSettings.PLUGIN_NAME
@@ -67,7 +58,7 @@ class Archive(Resource):
         ssrArchive = Folder()
         return ssrArchive.find(text, offset=offset, limit=limit, sort=sort)
 
-    # get SAIP projects 
+    # get SAIP projects
     # TODO: should add and access decorator for NCI user only
     @access.user
     @autoDescribeRoute(
@@ -156,6 +147,8 @@ class Archive(Resource):
             path = item.fullPath(id)
 
         return path
+
+
 def getSettings(self):
     settings = Setting()
     return {

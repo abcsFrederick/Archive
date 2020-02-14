@@ -1,5 +1,4 @@
 import View from 'girder/views/View';
-import { getModelClassByName, renderMarkdown, formatCount, capitalize, formatSize } from 'girder/misc';
 
 import HierarchyBreadcrumbTemplate from '../../templates/widgets/HierarchyBreadcrumbTemplate.pug';
 import HierarchyWidgetTemplate from '../../templates/widgets/hierarchyWidget.pug';
@@ -11,6 +10,21 @@ var HierarchyBreadcrumbView = View.extend({
         'click a.g-breadcrumb-link': function (event) {
             var link = $(event.currentTarget);
             this.trigger('g:breadcrumbClicked', parseInt(link.attr('g-index'), 10));
+        },
+        'keyup .search': function (e) {
+            let input = $(e.currentTarget).val();
+            let filter = input.toUpperCase();
+            let ul = $(e.currentTarget).parent().parent().parent().children('.g-folder-list-container').children();
+            let li = ul.children();
+            for (let i = 0; i < li.length; i++) {
+                let a = li[i].getElementsByTagName('a')[0];
+                let txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = '';
+                } else {
+                    li[i].style.display = 'none';
+                }
+            }
         }
     },
 
@@ -39,8 +53,8 @@ var HierarchyWidget = View.extend({
         this.type = settings.type;
 
         this.breadcrumbs = [{'object': {'name': 'Projects'},
-                             'type': 'projects'
-                            }];
+            'type': 'projects'
+        }];
         // Initialize the breadcrumb bar state
         this.breadcrumbView = new HierarchyBreadcrumbView({
             objects: this.breadcrumbs,
@@ -59,12 +73,11 @@ var HierarchyWidget = View.extend({
 
         this.folderListView.on('g:folderClicked', function (folder) {
             this.descend(folder);
-
         }, this).off('g:checkboxesChanged')
             .on('g:checkboxesChanged', this.updateChecked, this)
             .off('g:changed').on('g:changed', function () {
                 this.folderCount = this.folderListView.collection.length;
-                // this._childCountCheck();
+                this.fetchAndShowChildCountFolders();
             }, this);
         this.render();
     },
@@ -75,6 +88,7 @@ var HierarchyWidget = View.extend({
         if (this.type === 'series') {
             this.itemListView.setElement(this.$('.g-item-list-container')).render();
         }
+        return this;
     },
     setCurrentModel: function (parent, opts) {
         opts = opts || {};
@@ -88,7 +102,10 @@ var HierarchyWidget = View.extend({
                     type: this.type,
                     data: {'id': parent.id},
                     parentView: this
-                });
+                }).off('g:changed').on('g:changed', function () {
+                    this.itemCount = this.itemListView.collection.length;
+                    this.fetchAndShowChildCountItems();
+                }, this);
             } else {
                 this.itemListView.initialize({
                     type: this.type,
@@ -101,7 +118,7 @@ var HierarchyWidget = View.extend({
                 type: this.type,
                 data: {'id': -1},
                 parentView: this
-            });;
+            });
         } else {
             this.folderListView.initialize({
                 type: this.type,
@@ -136,6 +153,16 @@ var HierarchyWidget = View.extend({
             this.setCurrentModel(folder);
         }
     },
+    fetchAndShowChildCountFolders: function () {
+        this.$('.g-child-count-container').addClass('hide');
+        this.$('.g-child-count-container').removeClass('hide');
+        this.$('.g-subfolder-count').text(this.folderCount);
+    },
+    fetchAndShowChildCountItems: function () {
+        this.$('.g-child-count-container').addClass('hide');
+        this.$('.g-child-count-container').removeClass('hide');
+        this.$('.g-item-count').text(this.itemCount);
+    }
 });
 
 export default HierarchyWidget;

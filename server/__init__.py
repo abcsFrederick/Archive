@@ -1,4 +1,4 @@
-from girder.constants import  SettingDefault
+from girder.constants import SettingDefault
 from .SAIPConfig import PluginSettings
 
 from . import rest
@@ -22,7 +22,8 @@ SettingDefault.defaults.update({
         'port': 5432
     }
 })
+
+
 def load(info):
     # info['apiRoot'].scippy = Prefix()
     info['apiRoot'].Archive = rest.Archive()
-

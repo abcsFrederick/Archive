@@ -33,7 +33,7 @@ var FolderModel = AccessControlledModel.extend({
         }).fail((err) => {
             this.trigger('g:error', err);
         });
-    },
+    }
 });
 
 _.extend(FolderModel.prototype, MetadataMixin);

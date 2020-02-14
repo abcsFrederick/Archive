@@ -1,11 +1,10 @@
 from girder.models.setting import Setting
+from girder.exceptions import AccessException
 import mysql.connector as mariadb
+
 
 class MariadbProxy(object):
     def __init__(self, logger=None):
-        """ conn is an ordinary MongoDB-connection.
-
-        """
         if logger is None:
             import logging
             logger = logging.getLogger(__name__)
@@ -17,13 +16,13 @@ class MariadbProxy(object):
     def connection(self):
         try:
             mariadb_connection = mariadb.connect(
-                host=self.configuration['host'], 
-                port=self.configuration['port'], 
+                host=self.configuration['host'],
+                port=self.configuration['port'],
                 user=self.configuration['user'],
-                password=self.configuration['password'], 
+                password=self.configuration['password'],
                 database=self.configuration['dbname'])
             return mariadb_connection
-        except mariadb.Error as error:
+        except Exception:
             raise AccessException('Cannot connection to mariaDB on host:%s, databse:%s, user:%s' %
                                   (self.configuration['host'],
                                    self.configuration['dbname'],

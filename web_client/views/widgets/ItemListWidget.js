@@ -1,9 +1,9 @@
 import $ from 'jquery';
 import _ from 'underscore';
 
-import ItemCollection from '../../collections/ItemCollection';
 import View from 'girder/views/View';
 
+import ItemCollection from '../../collections/ItemCollection';
 import ItemListTemplate from '../../templates/widgets/itemList.pug';
 
 /**
@@ -61,13 +61,7 @@ var ItemListWidget = View.extend({
         this.checked = [];
         this.$el.html(ItemListTemplate({
             items: this.collection.toArray(),
-            // isParentPublic: this.public,
-            hasMore: this.collection.hasNextPage(),
-            // formatSize: formatSize,
-            // checkboxes: this._checkboxes,
-            // downloadLinks: this._downloadLinks,
-            // viewLinks: this._viewLinks,
-            // showSizes: this._showSizes
+            hasMore: this.collection.hasNextPage()
         }));
 
         return this;

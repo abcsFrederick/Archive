@@ -1,2 +1,2 @@
-add_standard_plugin_tests(NO_CLIENT NO_SERVER NO_SERVER_TESTS)
+add_standard_plugin_tests()
 

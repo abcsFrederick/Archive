@@ -1,9 +1,9 @@
 import $ from 'jquery';
 import _ from 'underscore';
 
-import FolderCollection from '../../collections/FolderCollection';
 import View from 'girder/views/View';
 
+import FolderCollection from '../../collections/FolderCollection';
 import FolderListTemplate from '../../templates/widgets/folderList.pug';
 
 /**

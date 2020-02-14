@@ -8,6 +8,7 @@ import psycopg2.extras
 
 BUF_SIZE = 65536
 
+
 class File(Resource):
     def __init__(self):
         self.name = 'SAIPArchiveItemModel'
@@ -20,12 +21,12 @@ class File(Resource):
     def fullPath(self, sliceId):
         try:
             self.PostgreCursor.execute(
-                """SELECT t2.*,pat_path,pat_name FROM 
-                (SELECT t1.*,study_path,pat_id,study_description FROM 
-                (SELECT t0.*, study_id AS series_study_id,series_path,series_description FROM 
-                (SELECT id, series_id AS series_series_id, filename FROM images WHERE id = %s) 
-                AS t0 LEFT JOIN series ON t0.series_series_id = series.id) 
-                AS t1 LEFT JOIN studies ON t1.series_study_id = studies.id) 
+                """SELECT t2.*,pat_path,pat_name FROM
+                (SELECT t1.*,study_path,pat_id,study_description FROM
+                (SELECT t0.*, study_id AS series_study_id,series_path,series_description FROM
+                (SELECT id, series_id AS series_series_id, filename FROM images WHERE id = %s)
+                AS t0 LEFT JOIN series ON t0.series_series_id = series.id)
+                AS t1 LEFT JOIN studies ON t1.series_study_id = studies.id)
                 AS t2 LEFT JOIN patients ON patients.id=t2.pat_id;""",
                 (sliceId,))
         except Exception:
@@ -37,27 +38,30 @@ class File(Resource):
             self.PostgreCursor.close()
             self.PostgreDB.close()
             if row['filename'] is not None\
-                and row['pat_path'] is not None\
-                and row['study_path'] is not None\
-                and row['series_path'] is not None:
+                    and row['pat_path'] is not None\
+                    and row['study_path'] is not None\
+                    and row['series_path'] is not None:
                 path = os.path.join(self.root,
-                                    row['pat_path'], 
-                                    row['study_path'], 
-                                    row['series_path'], 
+                                    row['pat_path'],
+                                    row['study_path'],
+                                    row['series_path'],
                                     row['filename'])
                 return row['filename'], path
             else:
-                raise GirderException('Rows with id:%s does not have [filename, pat_path, study_path or series_path]' % row['id'])
+                raise GirderException('Rows with id:%s does not have'
+                                      ' [filename, pat_path, study_path or series_path]' %
+                                      row['id'])
         else:
             raise GirderException('No slice: %s' % sliceId)
+
     def fullPathThumbnail(self, series_uid):
         try:
             self.PostgreCursor.execute(
-                """SELECT t2.*,pat_path,pat_name FROM 
-                (SELECT t1.*,study_path,pat_id,study_description FROM 
-                (SELECT series_uid, study_id AS series_study_id,series_path,series_description FROM 
-                series WHERE series_uid = %s) 
-                AS t1 LEFT JOIN studies ON t1.series_study_id = studies.id) 
+                """SELECT t2.*,pat_path,pat_name FROM
+                (SELECT t1.*,study_path,pat_id,study_description FROM
+                (SELECT series_uid, study_id AS series_study_id,series_path,series_description FROM
+                series WHERE series_uid = %s)
+                AS t1 LEFT JOIN studies ON t1.series_study_id = studies.id)
                 AS t2 LEFT JOIN patients ON patients.id=t2.pat_id;""",
                 (series_uid,))
         except Exception:
@@ -69,19 +73,22 @@ class File(Resource):
             self.PostgreCursor.close()
             self.PostgreDB.close()
             if row['series_uid'] is not None\
-                and row['pat_path'] is not None\
-                and row['study_path'] is not None\
-                and row['series_path'] is not None:
+                    and row['pat_path'] is not None\
+                    and row['study_path'] is not None\
+                    and row['series_path'] is not None:
                 path = os.path.join(self.root,
-                                    row['pat_path'], 
-                                    row['study_path'], 
-                                    row['series_path'], 
+                                    row['pat_path'],
+                                    row['study_path'],
+                                    row['series_path'],
                                     'thmb_' + row['series_uid'] + '.jpg')
                 return row['series_uid'], path
             else:
-                raise GirderException('Rows with id:%s does not have [series_uid, pat_path, study_path or series_path]' % row['id'])
+                raise GirderException('Rows with id:%s does not have'
+                                      ' [series_uid, pat_path, study_path or series_path]' %
+                                      row['id'])
         else:
             raise GirderException('No thumbnail: %s' % series_uid)
+
     def downloadFile(self, id, Type, offset=0, headers=True, endByte=None,
                      contentDisposition=None):
         if Type == 'slice':
@@ -89,7 +96,7 @@ class File(Resource):
         elif Type == 'thumbnail':
             filename, path = self.fullPathThumbnail(id)
             print path
-        
+
         if not os.path.isfile(path):
             raise GirderException(
                 'File %s does not exist.' % path,

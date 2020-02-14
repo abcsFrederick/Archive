@@ -1,4 +1,5 @@
 import Collection from 'girder/collections/Collection';
+
 import FolderModel from '../models/FolderModel';
 
 var FolderCollection = Collection.extend({

@@ -1,4 +1,5 @@
 import Collection from 'girder/collections/Collection';
+
 import FileModel from '../models/FileModel';
 
 var FileCollection = Collection.extend({
