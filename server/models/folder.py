@@ -40,7 +40,7 @@ class Folder(Resource):
                 userid = row['id']
         else:
             self.MariaCursor.close()
-            return 'not registored user of SAIP'
+            raise GirderException('Not a registored user of SAIP')
 
         self.MariaCursor.execute("SELECT group_id FROM site_group_memberships WHERE person_id=%s",
                                  (str(userid),))
