@@ -166,8 +166,9 @@ $(function () {
                 archiveView.hierarchyWidget.folderListView.render();
             });
             waitsFor(function () {
-                return archiveView.$('.archive-folder-list-link').length === 2;
-            }, 'SAIP archive studies list rendered as folder');
+                return archiveView.$('.archive-folder-list-link').length === 2 &&
+                       archiveView.$('.g-list-checkbox').length === 2;
+            }, 'SAIP archive studies list with checkbox rendered as folder');
             runs(function () {
                 expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('study_1');
                 expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('study_2');
@@ -195,7 +196,5 @@ $(function () {
                 expect($(archiveView.$('.archive-item-list-link')[1]).text()).toBe('series_2');
             });
         });
-    });
-    describe('Test project render', function () {
     });
 });

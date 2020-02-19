@@ -14,7 +14,7 @@ def tearDownModule():
 class ARCHIVETestCase(base.TestCase):
 
     def setUp(self):
-        super(ARCHIVETestCase, self).setUp()
+        base.TestCase.setUp(self)
 
         self.user = User().createUser('user', 'password', 'test', 'user', 'u123@u.com')
 

@@ -119,5 +119,5 @@ after_failure:
     - cat /tmp/worker.out
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash) -R $Archive_PATH -s $girder_path
+    - bash <(curl -s https://codecov.io/bash) -R $main_path -s $girder_path
     # - travis-sphinx deploy
