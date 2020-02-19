@@ -36,28 +36,43 @@ function _createFolder(id, name, type) {
             type: 'Nci::Experiment',
             updated_at: '2010-09-29T16:49:00+00:00'
         });
+    } else if (type === 'patients') {
+        Model.set({
+            id: id,
+            pat_mrn: name,
+            pat_name: name,
+            pat_path: '00000664'
+        });
+    } else if (type === 'studies') {
+        Model.set({
+            id: id,
+            study_description: name,
+            study_path: '00000911',
+            studyid: '365014'
+        });
     }
     return Model;
 }
 
-// function _createItem(id, name, type) {
-//     var Model;
-//     Model = new girder.plugins.Archive.models.FolderModel();
-//     if (type === 'series') {
-//         Model.set({
-//             id: id,
-//             modality: name,
-//             series_description: name,
-//             series_path: '00007082',
-//             series_uid: '1.3.12.2.1107.5.8.2.12345.2004113121559250.18380'
-//         });
-//     }
-//     return Model;
-// }
+function _createItem(id, name, type) {
+    var Model;
+    Model = new girder.plugins.Archive.models.FolderModel();
+    if (type === 'series') {
+        Model.set({
+            id: id,
+            modality: name,
+            series_description: name,
+            series_path: '00007082',
+            series_uid: '1.3.12.2.1107.5.8.2.12345.2004113121559250.18380'
+        });
+    }
+    return Model;
+}
 $(function () {
     describe('Archive project, experiment, patient, study, series list view', function () {
-        var testEl, archiveView, projectModel1, projectModel2, experimentModel1,
-            experimentModel2; // seriesModel1, seriesModel2;
+        var testEl, archiveView, projectModel1, projectModel2,
+            experimentModel1, experimentModel2, patientModel1, patientModel2,
+            studyModel1, studyModel2, seriesModel1, seriesModel2;
         it('create the admin user', function () {
             girderTest.createUser(
                 'test', 'test@nih.gov', 'Admin', 'Admin', 'testpassword')();
@@ -114,28 +129,72 @@ $(function () {
                 expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('experiment_2');
             });
         });
-        // it('Series fetch under current study', function () {
-        //     runs(function () {
-        //         $(archiveView.$('.archive-folder-list-link'))[0].click();
-        //     });
-        //     waitsFor(function () {
-        //         return archiveView.$('.breadcrumb .active').text() === 'experiment_1';
-        //     }, 'study_1 is click and render series underneath');
-        //     runs(function () {
-        //         expect(archiveView.hierarchyWidget.itemListView.collection.length).toBe(0);
-        //         seriesModel1 = _createItem(99998, 'series_1', 'series');
-        //         seriesModel2 = _createItem(99999, 'series_2', 'series');
-        //         archiveView.hierarchyWidget.itemListView.collection.add([seriesModel1, seriesModel2]);
-        //         archiveView.hierarchyWidget.itemListView.render();
-        //     });
-        //     waitsFor(function () {
-        //         return archiveView.$('.archive-item-list-link').length === 2;
-        //     }, 'SAIP archive series list rendered as item');
-        //     runs(function () {
-        //         expect($(archiveView.$('.archive-item-list-link')[0]).text()).toBe('series_1');
-        //         expect($(archiveView.$('.archive-item-list-link')[1]).text()).toBe('series_2');
-        //     });
-        // });
+        it('Patients fetch under current experient', function () {
+            runs(function () {
+                $(archiveView.$('.archive-folder-list-link'))[0].click();
+            });
+            waitsFor(function () {
+                return archiveView.$('.breadcrumb .active').text() === 'experiment_1';
+            }, 'experient_1 is click and render patients underneath');
+            runs(function () {
+                expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
+                patientModel1 = _createFolder(99998, 'patient_1', 'patients');
+                patientModel2 = _createFolder(99999, 'patient_2', 'patients');
+                archiveView.hierarchyWidget.folderListView.collection.add([patientModel1, patientModel2]);
+                archiveView.hierarchyWidget.folderListView.render();
+            });
+            waitsFor(function () {
+                return archiveView.$('.archive-folder-list-link').length === 2;
+            }, 'SAIP archive patients list rendered as folder');
+            runs(function () {
+                expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('patient_1');
+                expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('patient_2');
+            });
+        });
+        it('Studies fetch under current patient', function () {
+            runs(function () {
+                $(archiveView.$('.archive-folder-list-link'))[0].click();
+            });
+            waitsFor(function () {
+                return archiveView.$('.breadcrumb .active').text() === 'patient_1';
+            }, 'patient_1 is click and render studies underneath');
+            runs(function () {
+                expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
+                studyModel1 = _createFolder(99998, 'study_1', 'studies');
+                studyModel2 = _createFolder(99999, 'study_2', 'studies');
+                archiveView.hierarchyWidget.folderListView.collection.add([studyModel1, studyModel2]);
+                archiveView.hierarchyWidget.folderListView.render();
+            });
+            waitsFor(function () {
+                return archiveView.$('.archive-folder-list-link').length === 2;
+            }, 'SAIP archive studies list rendered as folder');
+            runs(function () {
+                expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('study_1');
+                expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('study_2');
+            });
+        });
+        it('Series fetch under current study', function () {
+            runs(function () {
+                $(archiveView.$('.archive-folder-list-link'))[0].click();
+            });
+            waitsFor(function () {
+                return archiveView.$('.breadcrumb .active').text() === 'study_1';
+            }, 'study_1 is click and render series underneath');
+            runs(function () {
+                expect(archiveView.hierarchyWidget.itemListView.collection.length).toBe(0);
+                seriesModel1 = _createItem(99998, 'series_1', 'series');
+                seriesModel2 = _createItem(99999, 'series_2', 'series');
+                archiveView.hierarchyWidget.itemListView.collection.add([seriesModel1, seriesModel2]);
+                archiveView.hierarchyWidget.itemListView.render();
+            });
+            waitsFor(function () {
+                return archiveView.$('.archive-item-list-link').length === 2;
+            }, 'SAIP archive series list rendered as item');
+            runs(function () {
+                expect($(archiveView.$('.archive-item-list-link')[0]).text()).toBe('series_1');
+                expect($(archiveView.$('.archive-item-list-link')[1]).text()).toBe('series_2');
+            });
+        });
     });
     describe('Test project render', function () {
     });

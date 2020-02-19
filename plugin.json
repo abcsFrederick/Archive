@@ -1,7 +1,7 @@
 {
     "name": "Archive",
     "description": "Connect to archive",
-    "url": "http://girder.readthedocs.io/en/latest/plugins.html#SAIP",
+    "url": "https://github.com/abcsFrederick/Archive.git",
     "version": "0.1.0",
     "grunt": {
         "file": "Gruntfile.js"
