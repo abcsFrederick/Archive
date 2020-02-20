@@ -74,6 +74,7 @@ before_install:
     - sudo mysql -e 'CREATE USER "ArchiveTest"@"localhost" IDENTIFIED BY "password";'
     - sudo mysql -e 'GRANT ALL PRIVILEGES ON * . * TO "ArchiveTest"@"localhost"'
     - sudo mysql -e 'CREATE DATABASE Archive_SAIP_TEST'
+    - sudo mysql -e 'show databases'
     - mysqldump Archive_SAIP_TEST < $TRAVIS_BUILD_DIR/plugin_tests/data/archive_plugin_saip_test.sql
 
     - sudo mysql -e 'show databases'
