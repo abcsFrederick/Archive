@@ -95,7 +95,6 @@ class File(Resource):
             filename, path = self.fullPath(id)
         elif Type == 'thumbnail':
             filename, path = self.fullPathThumbnail(id)
-            print path
 
         if not os.path.isfile(path):
             raise GirderException(

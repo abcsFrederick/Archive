@@ -121,8 +121,7 @@ class Folder(Resource):
             self.PostgreCursor.execute("""SELECT id, pat_name,
                                        pat_mrn, pat_path FROM patients WHERE id IN %s""",
                                        (tuple(patients),))
-        except Exception as e:
-            print e
+        except Exception:
             raise GirderException('Query failed when SELECT from studies')
 
         rows = self.PostgreCursor.fetchall()
