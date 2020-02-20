@@ -19,7 +19,8 @@ class ArchiveTestCase(base.TestCase):
         base.TestCase.setUp(self)
         self.admin = User().createUser('test1', 'password', 'TEST_1', 'admin', 'u123@u.com')
         self.user = User().createUser('test2', 'password2', 'TEST_2', 'user', '2u123@u.com')
-        self.notSAIPUser = User().createUser('test3', 'password3', 'TEST_3', 'notSAIPUser', '3u123@u.com')
+        self.notSAIPUser = User().createUser('test3', 'password3',
+                                             'TEST_3', 'notSAIPUser', '3u123@u.com')
 
         SettingDefault.defaults.update({
             'Archive.SCIPPYMOUNT': '/mnt/scippy_images',
@@ -50,7 +51,7 @@ class ArchiveModelTestCase(ArchiveTestCase):
         with pytest.raises(GirderException, match='Not a registored user of SAIP'):
             projects = Folder().getProjects(text=None, user=self.notSAIPUser)
             self.assertEqual(len(projects), 0)
-    
+
     def testExperimentsFetch(self):
         from girder.plugins.Archive.models.folder import Folder
         experiments = Folder().find(parentId=2, parentType='project')
@@ -82,6 +83,7 @@ class ArchiveModelTestCase(ArchiveTestCase):
         name, path = File().fullPathThumbnail(
             series_uid='1.3.46.670589.11.17559.5.0.4656.2010081716021473025')
         self.assertEqual(name, '1.3.46.670589.11.17559.5.0.4656.2010081716021473025')
+
     def testSlices(self):
         from girder.plugins.Archive.models.item import Item
         slices = Item().getFiles(seriesId=233)
@@ -89,4 +91,3 @@ class ArchiveModelTestCase(ArchiveTestCase):
         from girder.plugins.Archive.models.file import File
         name, path = File().fullPath(sliceId=5077)
         self.assertEqual(name, '00005077')
-
