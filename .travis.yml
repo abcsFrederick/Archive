@@ -77,7 +77,7 @@ before_install:
     - mysqldump Archive_SAIP_TEST < $TRAVIS_BUILD_DIR/plugin_tests/data/archive_plugin_saip_test.sql
 
     - psql -c "CREATE USER archivetest WITH PASSWORD 'password';" -U postgres
-    - psql -c "CREATE DATABASE archive_scippy_test;"" -U postgres
+    - psql -c "CREATE DATABASE archive_scippy_test;" -U postgres
     - psql -d archive_scippy_test -f $TRAVIS_BUILD_DIR/plugin_tests/data/archive_plugin_scippy_test.sql -U postgres
 
 
