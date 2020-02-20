@@ -77,8 +77,8 @@ before_install:
     - sudo mysql Archive_SAIP_TEST < $TRAVIS_BUILD_DIR/plugin_tests/data/archive_plugin_saip_test.sql
 
     - psql -c "CREATE USER archivetest WITH PASSWORD 'password';" -U postgres
-    - psql -c "CREATE DATABASE archive_scippy_test;" -U postgres
-    - psql -c "GRANT ALL PRIVILEGES ON DATABASE archive_scippy_test TO archivetest;" -U postgres
+    - psql -c "CREATE DATABASE archive_scippy_test;" -U archivetest
+    - psql -c "GRANT ALL PRIVILEGES ON DATABASE archive_scippy_test TO archivetest;" -U archivetest
     - psql -d archive_scippy_test -f $TRAVIS_BUILD_DIR/plugin_tests/data/archive_plugin_scippy_test.sql -U postgres
     - psql -c "SELECT * FROM patients;" -U archivetest -d archive_scippy_test
 
