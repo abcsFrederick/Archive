@@ -21,7 +21,7 @@ class Folder(Resource):
 
     def find(self, parentId, parentType, text=None):
         if parentType == 'user':
-            result = self.getProjects(text)
+            result = self.getProjects(text, self.user)
         elif parentType == 'project':
             result = self.getExperiments(parentId)
         elif parentType == 'experiment':
@@ -31,8 +31,8 @@ class Folder(Resource):
 
         return result
 
-    def getProjects(self, text):
-        self.MariaCursor.execute("SELECT * FROM site_users WHERE userId=%s", (self.user['login'],))
+    def getProjects(self, text, user=None):
+        self.MariaCursor.execute("SELECT * FROM site_users WHERE userId=%s", (user['login'],))
 
         rows = [row for row in self.MariaCursor]
         if len(rows):
@@ -45,6 +45,7 @@ class Folder(Resource):
         self.MariaCursor.execute("SELECT group_id FROM site_group_memberships WHERE person_id=%s",
                                  (str(userid),))
 
+        admin = False
         for row in self.MariaCursor:
             if row['group_id'] == 7:
                 admin = True
@@ -141,14 +142,14 @@ class Folder(Resource):
         self.PostgreDB.close()
         return rows
 
-    def fullPath(self, id, parentType):
-        if parentType == 'project':
+    def fullPath(self, id, type):
+        if type == 'project':
             # result = self.getExperiments(id)
             pass
-        elif parentType == 'experiment':
+        elif type == 'experiment':
             # result = self.getPatients(id)
             pass
-        elif parentType == 'patient':
+        elif type == 'patient':
             try:
                 self.PostgreCursor.execute(
                     """SELECT id,pat_path,pat_name FROM
@@ -170,7 +171,7 @@ class Folder(Resource):
                     raise GirderException('Rows with id:%s does not have [ pat_path ]' % row['id'])
             else:
                 raise GirderException('No patient: %s ' % id)
-        elif parentType == 'study':
+        elif type == 'study':
             try:
                 self.PostgreCursor.execute(
                     """SELECT t1.*,pat_path,pat_name FROM
