@@ -68,133 +68,131 @@ function _createItem(id, name, type) {
     }
     return Model;
 }
-$(function () {
-    describe('Archive project, experiment, patient, study, series list view', function () {
-        var testEl, archiveView, projectModel1, projectModel2,
-            experimentModel1, experimentModel2, patientModel1, patientModel2,
-            studyModel1, studyModel2, seriesModel1, seriesModel2;
-        it('create the admin user', function () {
-            girderTest.createUser(
-                'test', 'test@nih.gov', 'Admin', 'Admin', 'testpassword')();
-        });
-        it('Projects fetch under current nih user', function () {
-            runs(function () {
-                testEl = $('<div/>').appendTo('body');
-                archiveView = new girder.plugins.Archive.views.body.ArchiveView({
-                    el: testEl,
-                    parentView: null
-                });
-            });
-            waitsFor(function () {
-                return archiveView.$('.g-archive-hierarchy-container').length === 1 &&
-                       archiveView.$('.g-hierarchy-breadcrumb-bar').length === 1 &&
-                       archiveView.$('.g-folder-list-container').length === 1 &&
-                       archiveView.$('.g-item-list-container').length === 1;
-            }, 'SAIP archive container created');
-            runs(function () {
-                expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
-                expect(archiveView.$('.breadcrumb .active').text()).toBe('Projects');
-                projectModel1 = _createFolder(99998, 'project_1', 'projects');
-                projectModel2 = _createFolder(99999, 'project_2', 'projects');
-                archiveView.hierarchyWidget.folderListView.collection.add([projectModel1, projectModel2]);
-                archiveView.hierarchyWidget.folderListView.render();
-            });
-            waitsFor(function () {
-                return archiveView.$('.archive-folder-list-link').length === 2;
-            }, 'SAIP archive projects list rendered as folder');
-            runs(function () {
-                expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('project_1');
-                expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('project_2');
+describe('Archive project, experiment, patient, study, series list view', function () {
+    var testEl, archiveView, projectModel1, projectModel2,
+        experimentModel1, experimentModel2, patientModel1, patientModel2,
+        studyModel1, studyModel2, seriesModel1, seriesModel2;
+    it('create the admin user', function () {
+        girderTest.createUser(
+            'test', 'test@nih.gov', 'Admin', 'Admin', 'testpassword')();
+    });
+    it('Projects fetch under current nih user', function () {
+        runs(function () {
+            testEl = $('<div/>').appendTo('body');
+            archiveView = new girder.plugins.Archive.views.body.ArchiveView({
+                el: testEl,
+                parentView: null
             });
         });
-        it('Experients fetch under current project', function () {
-            runs(function () {
-                $(archiveView.$('.archive-folder-list-link'))[0].click();
-            });
-            waitsFor(function () {
-                return archiveView.$('.breadcrumb .active').text() === 'project_1';
-            }, 'project_1 is click and render experiments underneath');
-            runs(function () {
-                expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
-                experimentModel1 = _createFolder(99998, 'experiment_1', 'experiments');
-                experimentModel2 = _createFolder(99999, 'experiment_2', 'experiments');
-                archiveView.hierarchyWidget.folderListView.collection.add([experimentModel1, experimentModel2]);
-                archiveView.hierarchyWidget.folderListView.render();
-            });
-            waitsFor(function () {
-                return archiveView.$('.archive-folder-list-link').length === 2;
-            }, 'SAIP archive experiments list rendered as folder');
-            runs(function () {
-                expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('experiment_1');
-                expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('experiment_2');
-            });
+        waitsFor(function () {
+            return archiveView.$('.g-archive-hierarchy-container').length === 1 &&
+                   archiveView.$('.g-hierarchy-breadcrumb-bar').length === 1 &&
+                   archiveView.$('.g-folder-list-container').length === 1 &&
+                   archiveView.$('.g-item-list-container').length === 1;
+        }, 'SAIP archive container created');
+        runs(function () {
+            expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
+            expect(archiveView.$('.breadcrumb .active').text()).toBe('Projects');
+            projectModel1 = _createFolder(99998, 'project_1', 'projects');
+            projectModel2 = _createFolder(99999, 'project_2', 'projects');
+            archiveView.hierarchyWidget.folderListView.collection.add([projectModel1, projectModel2]);
+            archiveView.hierarchyWidget.folderListView.render();
         });
-        it('Patients fetch under current experient', function () {
-            runs(function () {
-                $(archiveView.$('.archive-folder-list-link'))[0].click();
-            });
-            waitsFor(function () {
-                return archiveView.$('.breadcrumb .active').text() === 'experiment_1';
-            }, 'experient_1 is click and render patients underneath');
-            runs(function () {
-                expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
-                patientModel1 = _createFolder(99998, 'patient_1', 'patients');
-                patientModel2 = _createFolder(99999, 'patient_2', 'patients');
-                archiveView.hierarchyWidget.folderListView.collection.add([patientModel1, patientModel2]);
-                archiveView.hierarchyWidget.folderListView.render();
-            });
-            waitsFor(function () {
-                return archiveView.$('.archive-folder-list-link').length === 2;
-            }, 'SAIP archive patients list rendered as folder');
-            runs(function () {
-                expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('patient_1');
-                expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('patient_2');
-            });
+        waitsFor(function () {
+            return archiveView.$('.archive-folder-list-link').length === 2;
+        }, 'SAIP archive projects list rendered as folder');
+        runs(function () {
+            expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('project_1');
+            expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('project_2');
         });
-        it('Studies fetch under current patient', function () {
-            runs(function () {
-                $(archiveView.$('.archive-folder-list-link'))[0].click();
-            });
-            waitsFor(function () {
-                return archiveView.$('.breadcrumb .active').text() === 'patient_1';
-            }, 'patient_1 is click and render studies underneath');
-            runs(function () {
-                expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
-                studyModel1 = _createFolder(99998, 'study_1', 'studies');
-                studyModel2 = _createFolder(99999, 'study_2', 'studies');
-                archiveView.hierarchyWidget.folderListView.collection.add([studyModel1, studyModel2]);
-                archiveView.hierarchyWidget.folderListView.render();
-            });
-            waitsFor(function () {
-                return archiveView.$('.archive-folder-list-link').length === 2 &&
-                       archiveView.$('.g-list-checkbox').length === 2;
-            }, 'SAIP archive studies list with checkbox rendered as folder');
-            runs(function () {
-                expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('study_1');
-                expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('study_2');
-            });
+    });
+    it('Experients fetch under current project', function () {
+        runs(function () {
+            $(archiveView.$('.archive-folder-list-link'))[0].click();
         });
-        it('Series fetch under current study', function () {
-            runs(function () {
-                $(archiveView.$('.archive-folder-list-link'))[0].click();
-            });
-            waitsFor(function () {
-                return archiveView.$('.breadcrumb .active').text() === 'study_1';
-            }, 'study_1 is click and render series underneath');
-            runs(function () {
-                expect(archiveView.hierarchyWidget.itemListView.collection.length).toBe(0);
-                seriesModel1 = _createItem(99998, 'series_1', 'series');
-                seriesModel2 = _createItem(99999, 'series_2', 'series');
-                archiveView.hierarchyWidget.itemListView.collection.add([seriesModel1, seriesModel2]);
-                archiveView.hierarchyWidget.itemListView.render();
-            });
-            waitsFor(function () {
-                return archiveView.$('.archive-item-list-link').length === 2;
-            }, 'SAIP archive series list rendered as item');
-            runs(function () {
-                expect($(archiveView.$('.archive-item-list-link')[0]).text()).toBe('series_1');
-                expect($(archiveView.$('.archive-item-list-link')[1]).text()).toBe('series_2');
-            });
+        waitsFor(function () {
+            return archiveView.$('.breadcrumb .active').text() === 'project_1';
+        }, 'project_1 is click and render experiments underneath');
+        runs(function () {
+            expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
+            experimentModel1 = _createFolder(99998, 'experiment_1', 'experiments');
+            experimentModel2 = _createFolder(99999, 'experiment_2', 'experiments');
+            archiveView.hierarchyWidget.folderListView.collection.add([experimentModel1, experimentModel2]);
+            archiveView.hierarchyWidget.folderListView.render();
+        });
+        waitsFor(function () {
+            return archiveView.$('.archive-folder-list-link').length === 2;
+        }, 'SAIP archive experiments list rendered as folder');
+        runs(function () {
+            expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('experiment_1');
+            expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('experiment_2');
+        });
+    });
+    it('Patients fetch under current experient', function () {
+        runs(function () {
+            $(archiveView.$('.archive-folder-list-link'))[0].click();
+        });
+        waitsFor(function () {
+            return archiveView.$('.breadcrumb .active').text() === 'experiment_1';
+        }, 'experient_1 is click and render patients underneath');
+        runs(function () {
+            expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
+            patientModel1 = _createFolder(99998, 'patient_1', 'patients');
+            patientModel2 = _createFolder(99999, 'patient_2', 'patients');
+            archiveView.hierarchyWidget.folderListView.collection.add([patientModel1, patientModel2]);
+            archiveView.hierarchyWidget.folderListView.render();
+        });
+        waitsFor(function () {
+            return archiveView.$('.archive-folder-list-link').length === 2;
+        }, 'SAIP archive patients list rendered as folder');
+        runs(function () {
+            expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('patient_1');
+            expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('patient_2');
+        });
+    });
+    it('Studies fetch under current patient', function () {
+        runs(function () {
+            $(archiveView.$('.archive-folder-list-link'))[0].click();
+        });
+        waitsFor(function () {
+            return archiveView.$('.breadcrumb .active').text() === 'patient_1';
+        }, 'patient_1 is click and render studies underneath');
+        runs(function () {
+            expect(archiveView.hierarchyWidget.folderListView.collection.length).toBe(0);
+            studyModel1 = _createFolder(99998, 'study_1', 'studies');
+            studyModel2 = _createFolder(99999, 'study_2', 'studies');
+            archiveView.hierarchyWidget.folderListView.collection.add([studyModel1, studyModel2]);
+            archiveView.hierarchyWidget.folderListView.render();
+        });
+        waitsFor(function () {
+            return archiveView.$('.archive-folder-list-link').length === 2 &&
+                   archiveView.$('.g-list-checkbox').length === 2;
+        }, 'SAIP archive studies list with checkbox rendered as folder');
+        runs(function () {
+            expect($(archiveView.$('.archive-folder-list-link')[0]).text()).toBe('study_1');
+            expect($(archiveView.$('.archive-folder-list-link')[1]).text()).toBe('study_2');
+        });
+    });
+    it('Series fetch under current study', function () {
+        runs(function () {
+            $(archiveView.$('.archive-folder-list-link'))[0].click();
+        });
+        waitsFor(function () {
+            return archiveView.$('.breadcrumb .active').text() === 'study_1';
+        }, 'study_1 is click and render series underneath');
+        runs(function () {
+            expect(archiveView.hierarchyWidget.itemListView.collection.length).toBe(0);
+            seriesModel1 = _createItem(99998, 'series_1', 'series');
+            seriesModel2 = _createItem(99999, 'series_2', 'series');
+            archiveView.hierarchyWidget.itemListView.collection.add([seriesModel1, seriesModel2]);
+            archiveView.hierarchyWidget.itemListView.render();
+        });
+        waitsFor(function () {
+            return archiveView.$('.archive-item-list-link').length === 2;
+        }, 'SAIP archive series list rendered as item');
+        runs(function () {
+            expect($(archiveView.$('.archive-item-list-link')[0]).text()).toBe('series_1');
+            expect($(archiveView.$('.archive-item-list-link')[1]).text()).toBe('series_2');
         });
     });
 });
