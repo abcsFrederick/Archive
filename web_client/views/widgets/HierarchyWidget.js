@@ -14,7 +14,7 @@ var HierarchyBreadcrumbView = View.extend({
         'keyup .search': function (e) {
             let input = $(e.currentTarget).val();
             let filter = input.toUpperCase();
-            let ul = $(e.currentTarget).parent().parent().parent().children('.g-folder-list-container').children();
+            let ul = $(e.currentTarget).parent().parent().parent().parent().children('.g-folder-list-container').children();
             let li = ul.children();
             for (let i = 0; i < li.length; i++) {
                 let a = li[i].getElementsByTagName('a')[0];
