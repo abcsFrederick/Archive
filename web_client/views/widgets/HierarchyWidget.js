@@ -16,6 +16,7 @@ var HierarchyBreadcrumbView = View.extend({
             let filter = input.toUpperCase();
             let ul = $(e.currentTarget).parent().parent().parent().parent().children('.g-folder-list-container').children();
             let li = ul.children();
+            console.log(li);
             for (let i = 0; i < li.length; i++) {
                 let a = li[i].getElementsByTagName('a')[0];
                 let txtValue = a.textContent || a.innerText;
