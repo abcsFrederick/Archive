@@ -43,7 +43,6 @@ var FolderListWidget = View.extend({
         this.collection = new FolderCollection();
         this.collection.rename({archive: 'SAIP', type: this.type});
         this.collection.on('g:changed', function () {
-            window.test = this.collection;
             this.render();
             this.trigger('g:changed');
         }, this).fetch(this.data);
