@@ -5,9 +5,9 @@ class PluginSettings(object):
 
     SAIP_CONFIG = 'Archive.SAIP'
 
-    SACIPPY_CONFIG = 'Archive.SCIPPY'
+    SCIPPY_CONFIG = 'Archive.SCIPPY'
 
-    SACIPPY_MOUNT = 'Archive.SCIPPYMOUNT'
+    SCIPPY_MOUNT = 'Archive.SCIPPYMOUNT'
 # class production(Config):
 #     DEBUG = False
 
