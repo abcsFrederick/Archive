@@ -1,4 +1,4 @@
-import View from 'girder/views/View';
+import View from '@girder/core/views/View';
 
 import SAIPTemplates from '../../templates/body/archivePage.pug';
 import HierarchyWidget from '../widgets/HierarchyWidget';

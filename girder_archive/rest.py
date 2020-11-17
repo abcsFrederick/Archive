@@ -119,7 +119,6 @@ class Archive(Resource):
         saipArchive = Item()
         return saipArchive.getFiles(id)
 
-    @access.cookie
     @access.public(scope=TokenScope.DATA_READ)
     @autoDescribeRoute(
         Description('Download slice from SAIP image archive[type=File]')

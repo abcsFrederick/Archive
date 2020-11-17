@@ -1,12 +1,10 @@
 import _ from 'underscore';
 
-import AccessControlledModel from 'girder/models/AccessControlledModel';
-import MetadataMixin from 'girder/models/MetadataMixin';
-import { restRequest } from 'girder/rest';
+import AccessControlledModel from '@girder/core/models/AccessControlledModel';
+import MetadataMixin from '@girder/core/models/MetadataMixin';
+import { restRequest } from '@girder/core/rest';
 
-import FileCollection from '../collections/FileCollection';
-
-var ItemModel = AccessControlledModel.extend({
+var FolderModel = AccessControlledModel.extend({
     resourceName: 'Archive',
     archive: null,
     type: null,
@@ -35,21 +33,9 @@ var ItemModel = AccessControlledModel.extend({
         }).fail((err) => {
             this.trigger('g:error', err);
         });
-    },
-    getSlices: function (id) {
-        return restRequest({
-            url: `${this.altUrl || this.resourceName}/${this.get('archive')}/slices`,
-            data: {id: id}
-        }).then((resp) => {
-            let fileCollection = new FileCollection(resp);
-            this.trigger('archive:slices', fileCollection);
-            return fileCollection;
-        }).fail((err) => {
-            this.trigger('g:error', err);
-        });
     }
 });
 
-_.extend(ItemModel.prototype, MetadataMixin);
+_.extend(FolderModel.prototype, MetadataMixin);
 
-export default ItemModel;
+export default FolderModel;

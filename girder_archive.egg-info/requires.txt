@@ -1,2 +1,3 @@
+girder>=3
 psycopg2-binary
 mysql-connector

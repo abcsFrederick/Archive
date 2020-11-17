@@ -1,4 +1,4 @@
-add_standard_plugin_tests()
+add_standard_plugin_tests(PACKAGE "girder_archive")
 
 # add_python_test(Archive_Models
 #   PLUGIN Archive

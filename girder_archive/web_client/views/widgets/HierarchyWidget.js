@@ -1,4 +1,4 @@
-import View from 'girder/views/View';
+import View from '@girder/core/views/View';
 
 import HierarchyBreadcrumbTemplate from '../../templates/widgets/HierarchyBreadcrumbTemplate.pug';
 import HierarchyWidgetTemplate from '../../templates/widgets/hierarchyWidget.pug';

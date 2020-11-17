@@ -1,4 +1,5 @@
-from girder.constants import SettingDefault
+from girder import plugin
+from girder.settings import SettingDefault
 from .SAIPConfig import PluginSettings
 
 from . import rest
@@ -37,7 +38,8 @@ SettingDefault.defaults.update({
     }
 })
 
-
-def load(info):
-    # info['apiRoot'].scippy = Prefix()
-    info['apiRoot'].Archive = rest.Archive()
+class ArchivePlugin(plugin.GirderPlugin):
+    DISPLAY_NAME = 'Archive'
+    CLIENT_SOURCE_PATH = 'web_client'
+    def load(self, info):
+        info['apiRoot'].archive = rest.Archive()

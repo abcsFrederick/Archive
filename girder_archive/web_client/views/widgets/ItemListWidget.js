@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import _ from 'underscore';
 
-import View from 'girder/views/View';
+import View from '@girder/core/views/View';
 
 import ItemCollection from '../../collections/ItemCollection';
 import ItemListTemplate from '../../templates/widgets/itemList.pug';
