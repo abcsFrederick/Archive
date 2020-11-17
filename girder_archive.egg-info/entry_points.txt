@@ -1,3 +1,0 @@
-[girder.plugin]
-archive = girder_archive:ArchivePlugin
-
