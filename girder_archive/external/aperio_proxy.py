@@ -19,7 +19,5 @@ class AperioProxy(object):
         self.crl.perform()
 
         htmlString = e.getvalue().decode('UTF-8')
-        print(len(htmlString))
+
         return htmlString
-    def test(self):
-        print('---test-----')
