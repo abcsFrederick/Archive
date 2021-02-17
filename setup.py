@@ -1,7 +1,14 @@
 from setuptools import setup, find_packages
+from setuptools.command.install import install
+from subprocess import call
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
+
+class CustomInstall(install):
+    def run(self):
+        install.run(self)
+        call(['pip', 'install', 'pycurl', '--global-option=--with-openssl'])
 
 requirements = [
     'girder>=3',
@@ -37,5 +44,8 @@ setup(
         'girder.plugin': [
             'archive = girder_archive:ArchivePlugin'
         ]
+    },
+    cmdclass={
+        'installPycurl': CustomInstall
     }
 )
