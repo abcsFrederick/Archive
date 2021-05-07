@@ -13,7 +13,8 @@ class CustomInstall(install):
 requirements = [
     'girder>=3',
     'psycopg2-binary',
-    'mysql-connector'
+    'mysql-connector',
+    'requests==2.23.0'
 ]
 
 setup(

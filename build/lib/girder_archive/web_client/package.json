@@ -1,0 +1,21 @@
+{
+    "name": "@girder/archive",
+    "version": "0.1.0",
+    "description": "A general purpose plugin for archive remote task execution.",
+    "homepage": "https://github.com/abcsFrederick/Archive",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/abcsFrederick/Archive"
+    },
+    "peerDependencies": {
+        "@girder/core": "*"
+    },
+    "dependencies": {
+    },
+    "main": "./index.js",
+    "girderPlugin": {
+        "name": "archive",
+        "main": "./main.js"
+    }
+}
