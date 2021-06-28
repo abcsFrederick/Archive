@@ -1,0 +1,6 @@
+ul.g-item-list
+  each item in items
+    li.g-archive-list-entry(style='font-size: 15px;border-top: 1px solid #efefef;box-sizing: border-box;padding: 4px 5px 3px;')
+      a.archive-item-list-link(g-archive-cid=item.cid)
+        i.icon-doc-text-inv
+        = item.get('series_description')

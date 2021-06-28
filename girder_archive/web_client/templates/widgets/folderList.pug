@@ -1,0 +1,24 @@
+ul.g-folder-list(style='padding: 0px;list-style-type: none;')
+  each folder in folders
+    li.archive-folder-list-entry(style='font-size: 15px;border-top: 1px solid #efefef;box-sizing: border-box;padding: 4px 5px 3px;')
+      if type === 'projects'
+        a.archive-folder-list-link(archive-folder-cid=folder.cid, draggable="true", ondragstart=`event.dataTransfer.setData('folderId','${folder.get('nci_projects_id')}');event.dataTransfer.setData('folderName','${folder.get('nci_projects_name')}');event.dataTransfer.setData('from','Archive');event.dataTransfer.setData('hierarchy','Project')`)
+          i.icon-folder
+          = folder.get('nci_projects_name')
+          i.icon-right-dir
+      if type === 'experiments'
+        a.archive-folder-list-link(archive-folder-cid=folder.cid, draggable="true", ondragstart=`event.dataTransfer.setData('folderId','${folder.get('id')}');event.dataTransfer.setData('folderName','${folder.get('title')}');event.dataTransfer.setData('from','Archive');event.dataTransfer.setData('hierarchy','Experiment')`)
+          i.icon-folder
+          = folder.get('title')
+          i.icon-right-dir
+      if type === 'patients'
+        a.archive-folder-list-link(archive-folder-cid=folder.cid)
+          i.icon-folder
+          = folder.get('pat_name')
+          i.icon-right-dir
+      if type === 'studies'
+        input.g-list-checkbox(type="checkbox", archive-folder-cid=folder.cid)
+        a.archive-folder-list-link(archive-folder-cid=folder.cid, draggable="true", ondragstart=`event.dataTransfer.setData('folderId','${folder.get('id')}');event.dataTransfer.setData('folderName','${folder.get('study_description')}');event.dataTransfer.setData('from','Archive')`)
+          i.icon-folder
+          = folder.get('study_description')
+          i.icon-right-dir
