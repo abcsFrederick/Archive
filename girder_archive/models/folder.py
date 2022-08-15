@@ -32,6 +32,7 @@ class Folder(Resource):
         return result
 
     def getProjects(self, text, user=None):
+        print(user['login'])
         self.MariaCursor.execute("SELECT * FROM site_users WHERE userId=%s", (user['login'],))
 
         rows = [row for row in self.MariaCursor]

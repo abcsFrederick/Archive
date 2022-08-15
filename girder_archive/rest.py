@@ -22,19 +22,18 @@ class Archive(Resource):
         #     print
         # else:
         #     self.configuration = Setting().get('Archive.SCIPPY')
-        self.resourceName = PluginSettings.PLUGIN_NAME
+        self.resourceName = 'archive'
 
         # more secure with login current user info
         # self.route('GET', ('projects', 'ssr',), self.getSSRProjects)
-
-        self.route('GET', ('SAIP', 'projects',), self.getSAIPProjects)
-        self.route('GET', ('SAIP', 'experiments'), self.getExperiments)
-        self.route('GET', ('SAIP', 'patients'), self.getPatients)
-        self.route('GET', ('SAIP', 'studies'), self.getStudies)
-        self.route('GET', ('SAIP', 'series'), self.getSeries)
-        self.route('GET', ('SAIP', 'slices'), self.getSlices)
-        self.route('GET', ('SAIP', 'slice', 'download'), self.download)
-        self.route('GET', ('SAIP', 'fullPath'), self.getFullPath)
+        self.route('GET', ('saip', 'projects',), self.getSAIPProjects)
+        self.route('GET', ('saip', 'experiments',), self.getExperiments)
+        self.route('GET', ('saip', 'patients',), self.getPatients)
+        self.route('GET', ('saip', 'studies',), self.getStudies)
+        self.route('GET', ('saip', 'series',), self.getSeries)
+        self.route('GET', ('saip', 'slices',), self.getSlices)
+        self.route('GET', ('saip', 'slice', 'download',), self.download)
+        self.route('GET', ('saip', 'fullPath',), self.getFullPath)
 
         # self.route('GET', (':id', 'rootpath', 'patient'), self.getPatientSeriesRoot)
         # self.route('GET', (':id', 'rootpath', 'study'), self.getStudySeriesRoot)
@@ -48,7 +47,7 @@ class Archive(Resource):
 
         # self.route('GET',(':id','SAIPExistingValidation',),self.SAIPExistingValidation)
 
-    @access.user
+    @access.token
     @autoDescribeRoute(
         Description('Retrieve all projects under login user.[type=Folder]')
         .param('text', 'Pass to perform a text search.', required=False)
@@ -66,6 +65,7 @@ class Archive(Resource):
         .param('text', 'Pass to perform a text search.', required=False)
         .errorResponse())
     def getSAIPProjects(self, text):
+        print(text)
         folder = Folder()
         parentType = 'user'
         return folder.find(None, parentType)
