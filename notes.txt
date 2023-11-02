@@ -5,5 +5,5 @@ export CPPFLAGS=-I/usr/local/opt/openssl/include
 python setup.py installPycurl
 # for Linux(centos)
 pip install --no-cache-dir --compile --ignore-installed --install-option="--with-nss" pycurl
-# for Linux(ubuntu)
+# for Linux(ubuntu) / OEL8
 pip install --no-cache-dir --compile --ignore-installed --install-option="--with-openssl" pycurl
