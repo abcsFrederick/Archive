@@ -21,11 +21,12 @@ class AperioProxy(object):
             logger = logging.getLogger(__name__)
         self.crl = pycurl.Curl()
         self.logger = logger
-        self.baseURL = 'http://129.43.165.161/'
+        self.baseURL = 'https://fslspw-aprap01p.nih.gov/imageserver/'
         self.username = username
         self.password = password
-        self.baseLoc = '//at-s-is2.ncifcrf.gov/phl_scanscope/static'
+        self.baseLoc = '//fssrgd-is05p.ncifcrf.gov/phl_scanscope/static'
         self.mountLoc = '/mnt/phl_scanscope/static'
+        self.crl.setopt(pycurl.SSL_VERIFYPEER, False)
         self.crl.setopt(pycurl.USERPWD, username + ':' + password)
         self.crl.setopt(pycurl.HTTPAUTH, pycurl.HTTPAUTH_BASIC)
 
@@ -44,7 +45,6 @@ class AperioProxy(object):
         self.crl.setopt(pycurl.URL, self.baseURL + '@' + id + '?GETPATH')
         self.crl.setopt(pycurl.WRITEFUNCTION, e.write)
         self.crl.perform()
-
         imagePath = e.getvalue().decode('UTF-8')
         imagePath = imagePath.replace('\\','/').replace(self.baseLoc, self.mountLoc)
         if imagePath.find("Invalid userid/password:") == 0:
