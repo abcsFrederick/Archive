@@ -11,7 +11,6 @@ class CustomInstall(install):
         call(['pip', 'install', 'pycurl', '--global-option=--with-openssl'])
 
 requirements = [
-    'pycurl',
     'girder==3.2.3',
     'psycopg2-binary',
     'mysql-connector'
